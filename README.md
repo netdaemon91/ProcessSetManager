@@ -1,5 +1,13 @@
 # ProcessSet Manager
 
+[![Version](https://img.shields.io/badge/Version-0.5.0-2ea44f)](#)
+[![.NET](https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/download/dotnet/10.0)
+[![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D4?logo=windows11&logoColor=white)](#)
+[![C%23](https://img.shields.io/badge/C%23-WinForms-239120?logo=csharp&logoColor=white)](#)
+[![Sprache](https://img.shields.io/badge/UI-Deutsch-F7DF1E)](#)
+[![Lizenz](https://img.shields.io/badge/Lizenz-MIT-blue)](LICENSE)
+[![Status](https://img.shields.io/badge/Status-in%20Entwicklung-orange)](#)
+
 ProcessSet Manager ist ein schlanker Open-Source-Session- und Prozessprofil-Manager für Windows. Die Anwendung ermöglicht es, laufende Programme zu einem Profil zusammenzufassen, sie kontrolliert zu beenden und den vorherigen Zustand später soweit möglich wiederherzustellen.
 
 > Aktueller Stand: **0.5.0**  
