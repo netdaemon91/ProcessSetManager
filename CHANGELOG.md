@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.6.0
+
+- vollständige Benutzeroberfläche auf Deutsch und Englisch umgestellt
+- automatische Erstsprache anhand der Windows-Sprache
+- Sprachwahl unter Einstellungen hinzugefügt
+- Sprache wird in `settings.json` gespeichert
+- Tray-Menü, Dialoge, Tooltips, Hilfe, Status- und Fehlermeldungen lokalisiert
+- Vorschau- und Ergebnisdialoge lokalisiert
+- Profile und Sitzungsdaten bleiben sprachunabhängig kompatibel
+
+
 Alle nennenswerten Änderungen an ProcessSet Manager werden in dieser Datei dokumentiert.
 
 ## [0.5.0] - 2026-09-25

@@ -153,7 +153,56 @@ public static class Localization
         ["Folgendes würde beim Aktivieren von „{0}“ passieren:"] = "The following would happen when activating “{0}”:",
         ["{0} laufende Programme würden beendet · {1} davon automatisch wiederherstellbar · {2} nicht automatisch wiederherstellbar · {3} geschützt · {4} laufen derzeit nicht"] = "{0} running applications would be closed · {1} automatically restorable · {2} not automatically restorable · {3} protected · {4} currently not running",
         ["\n\nFehlerdetails wurden gespeichert unter:\n{0}"] = "\n\nError details were saved to:\n{0}",
-        ["Vibe Coded by NetDaemon  ·  Version {0}"] = "Vibe Coded by NetDaemon  ·  Version {0}"
+        ["Vibe Coded by NetDaemon  ·  Version {0}"] = "Vibe Coded by NetDaemon  ·  Version {0}",
+        ["Konfiguration:\n{0}"] = "Configuration:\n{0}",
+        ["● Aktiv: {0}"] = "● Active: {0}",
+        ["○ Kein aktiver Modus"] = "○ No active mode",
+        ["{0} Prozesse geladen | {1} ausgewählt"] = "{0} processes loaded | {1} selected",
+        ["{0} Prozesse eingelesen."] = "{0} processes read.",
+        ["{0} steht auf der Schutzliste."] = "{0} is on the protection list.",
+        ["{0} Programme ausgewählt"] = "{0} applications selected",
+        ["Profil '{0}' gespeichert"] = "Profile '{0}' saved",
+        ["Profil '{0}' gespeichert."] = "Profile '{0}' saved.",
+        ["{0} Programme · zuletzt aktiviert: {1}"] = "{0} applications · last activated: {1}",
+        ["Der Modus '{0}' ist bereits aktiv.\n\n"] = "Mode '{0}' is already active.\n\n",
+        ["Modus '{0}' ist aktiv"] = "Mode '{0}' is active",
+        ["Modus '{0}' aktiviert. Beendet: {1}, geschützt: {2}, Fehler: {3}, wiederherstellbar: {4}."] = "Mode '{0}' activated. Closed: {1}, protected: {2}, errors: {3}, restorable: {4}.",
+        ["Temporärer Modus aktiviert. Beendet: {0}, Fehler: {1}, wiederherstellbar: {2}."] = "Temporary mode activated. Closed: {0}, errors: {1}, restorable: {2}.",
+        ["Sitzung vom {0:g} wiederherstellen?\n\n"] = "Restore session from {0:g}?\n\n",
+        ["Wiederherstellung abgeschlossen. Gestartet: {0}, bereits aktiv: {1}, Fehler: {2}."] = "Restore completed. Started: {0}, already running: {1}, errors: {2}.",
+        ["{0} beendet"] = "{0} ended",
+        ["{0} beendet."] = "{0} ended.",
+        ["● {0} aktiv"] = "● {0} active",
+        ["Aktiv seit {0} · {1} Programme wiederherstellbar"] = "Active since {0} · {1} applications restorable",
+        ["unbekannt"] = "unknown",
+        [" · zuletzt {0:g}"] = " · last {0:g}",
+        ["{0}: {1} Programme{2}"] = "{0}: {1} applications{2}",
+        ["{0}: wegen Schutzliste nicht in die Auswahl übernommen."] = "{0}: not added to the selection because it is protected.",
+        ["Profil '{0}' in Auswahl geladen"] = "Profile '{0}' loaded into selection",
+        ["Profil '{0}' in '{1}' umbenannt."] = "Profile '{0}' renamed to '{1}'.",
+        ["Kopie"] = "Copy",
+        ["Profil '{0}' als '{1}' dupliziert."] = "Profile '{0}' duplicated as '{1}'.",
+        ["Profil '{0}' wirklich löschen?"] = "Really delete profile '{0}'?",
+        ["Profil '{0}' gelöscht."] = "Profile '{0}' deleted.",
+        ["Exportiert: {0}"] = "Exported: {0}",
+        ["Profil '{0}' als {1} exportiert."] = "Profile '{0}' exported as {1}.",
+        ["{0} ist bereits fest durch ProcessSet geschützt."] = "{0} is already permanently protected by ProcessSet.",
+        ["{0} zur Schutzliste hinzugefügt."] = "{0} added to the protection list.",
+        ["{0} aus Schutzliste entfernt."] = "{0} removed from the protection list.",
+        ["{0} Prozessnamen aus der aktuellen Auswahl geschützt."] = "{0} process names from the current selection protected.",
+        ["Einstellungen konnten nicht gespeichert werden: {0}"] = "Settings could not be saved: {0}",
+        ["Modus „{0}“ ist aktiv."] = "Mode “{0}” is active.",
+        ["Beendet: {0}"] = "Closed: {0}",
+        ["Davon erzwungen beendet: {0}"] = "Force-closed: {0}",
+        ["Liefen nicht: {0}"] = "Not running: {0}",
+        ["Geschützt / übersprungen: {0}"] = "Protected / skipped: {0}",
+        ["Fehler: {0}"] = "Errors: {0}",
+        ["Für Wiederherstellung gespeichert: {0}"] = "Saved for restore: {0}",
+        ["… und {0} weitere."] = "… and {0} more.",
+        ["Gestartet: {0}"] = "Started: {0}",
+        ["Liefen bereits: {0}"] = "Already running: {0}",
+        ["EXE nicht gefunden: {0}"] = "EXE not found: {0}",
+        ["Der aktuelle Modus ist bereits aktiv."] = "The current mode is already active."
     };
 
     public static string CurrentCode { get; private set; } = DetectDefaultLanguage();
@@ -165,9 +214,12 @@ public static class Localization
     public static void SetLanguage(string? language)
     {
         CurrentCode = NormalizeLanguage(language);
-        CultureInfo.CurrentUICulture = IsEnglish
+        var culture = IsEnglish
             ? CultureInfo.GetCultureInfo("en-US")
             : CultureInfo.GetCultureInfo("de-DE");
+
+        CultureInfo.CurrentCulture = culture;
+        CultureInfo.CurrentUICulture = culture;
     }
 
     public static string T(string german)

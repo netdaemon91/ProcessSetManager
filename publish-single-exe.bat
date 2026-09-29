@@ -27,7 +27,7 @@ echo Fertig.
 echo Die EXE liegt unter:
 echo bin\Release\net10.0-windows\win-x64\publish\ProcessSetManager.exe
 echo.
-echo Version 0.5 enthaelt Hilfe, Vorschau, Ergebnisdialoge, Tray, Modi und Schutzliste.
+echo Version 0.6 enthaelt Deutsch/Englisch, Hilfe, Vorschau, Tray, Modi und Schutzliste.
 pause
 exit /b 0
 

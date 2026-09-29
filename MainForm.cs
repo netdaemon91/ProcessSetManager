@@ -32,6 +32,7 @@ public sealed class MainForm : Form
     private readonly ListBox _protectedList = new();
     private readonly TextBox _protectInput = new();
     private readonly CheckBox _minimizeToTray = new();
+    private readonly ComboBox _languageBox = new();
 
     private readonly NotifyIcon _trayIcon = new();
     private readonly ContextMenuStrip _trayMenu = new();
@@ -54,6 +55,7 @@ public sealed class MainForm : Form
     public MainForm()
     {
         _settings = _profileStore.LoadSettings();
+        Localization.SetLanguage(_settings.Language);
         _modeState = _profileStore.LoadModeState();
 
         Text = "ProcessSet Manager";
@@ -78,7 +80,7 @@ public sealed class MainForm : Form
             RefreshProfileLists();
             LoadSettingsIntoUi();
             RefreshModeUi();
-            Log("ProcessSet Manager gestartet.");
+            Log(Localization.T("ProcessSet Manager gestartet."));
         };
 
         Resize += (_, _) =>
@@ -98,7 +100,7 @@ public sealed class MainForm : Form
                     {
                         _trayBalloonShown = true;
                         _trayIcon.BalloonTipTitle = "ProcessSet Manager";
-                        _trayIcon.BalloonTipText = "ProcessSet Manager läuft im Infobereich weiter.";
+                        _trayIcon.BalloonTipText = Localization.T("ProcessSet Manager läuft im Infobereich weiter.");
                             _trayIcon.ShowBalloonTip(2500);
                         }
                     }));
@@ -154,7 +156,7 @@ public sealed class MainForm : Form
 
         var subtitle = new Label
         {
-            Text = "Prozessprofile aktivieren, den aktuellen PC-Zustand reduzieren und später wiederherstellen.",
+            Text = Localization.T("Prozessprofile aktivieren, den aktuellen PC-Zustand reduzieren und später wiederherstellen."),
             AutoSize = true,
             ForeColor = Muted,
             Margin = Padding.Empty
@@ -181,11 +183,11 @@ public sealed class MainForm : Form
             if (helpIndex >= 0)
                 _tabs.SelectedIndex = helpIndex;
         };
-        _toolTip.SetToolTip(help, "Öffnet die integrierte Kurzanleitung.");
+        _toolTip.SetToolTip(help, Localization.T("Öffnet die integrierte Kurzanleitung."));
 
         var about = MakeButton("About", 92);
         about.Click += (_, _) => new AboutForm().ShowDialog(this);
-        _toolTip.SetToolTip(about, "Versions- und Projektinformationen.");
+        _toolTip.SetToolTip(about, Localization.T("Versions- und Projektinformationen."));
 
         headerButtons.Controls.Add(help);
         headerButtons.Controls.Add(about);
@@ -284,11 +286,11 @@ public sealed class MainForm : Form
 
         var execute = MakeButton("Ausgewähltes Profil aktivieren", 270);
         execute.Click += async (_, _) => await ExecuteSelectedProfileAsync();
-        _toolTip.SetToolTip(execute, "Prüft den aktuellen Zustand und zeigt vor dem Beenden eine Vorschau.");
+        _toolTip.SetToolTip(execute, Localization.T("Prüft den aktuellen Zustand und zeigt vor dem Beenden eine Vorschau."));
 
         ConfigureButton(_modeActionButton, "Modus beenden & wiederherstellen", 285, danger: false);
         _modeActionButton.Click += (_, _) => RestoreLastSession(fromActiveMode: true);
-        _toolTip.SetToolTip(_modeActionButton, "Startet die beim Aktivieren gespeicherten Programme wieder und beendet den aktiven Modus.");
+        _toolTip.SetToolTip(_modeActionButton, Localization.T("Startet die beim Aktivieren gespeicherten Programme wieder und beendet den aktiven Modus."));
 
         var restore = MakeButton("Letzte Sitzung erneut wiederherstellen", 285);
         restore.Click += (_, _) => RestoreLastSession(fromActiveMode: false);
@@ -360,7 +362,7 @@ public sealed class MainForm : Form
         StyleTextBox(_searchBox);
         _searchBox.TextChanged += (_, _) => RefreshProcessGrid();
 
-        _onlyApps.Text = "Nur Programme mit Fenster";
+        _onlyApps.Text = Localization.T("Nur Programme mit Fenster");
         _onlyApps.AutoSize = true;
         _onlyApps.ForeColor = TextColor;
         _onlyApps.Margin = new Padding(0, 7, 14, 0);
@@ -433,11 +435,11 @@ public sealed class MainForm : Form
 
         var save = MakeButton("Als Profil speichern", 190);
         save.Click += (_, _) => SaveCurrentSelectionAsProfile();
-        _toolTip.SetToolTip(save, "Speichert die aktuelle Auswahl und Reihenfolge als wiederverwendbares Profil.");
+        _toolTip.SetToolTip(save, Localization.T("Speichert die aktuelle Auswahl und Reihenfolge als wiederverwendbares Profil."));
 
         var stopNow = MakeButton("Auswahl als Modus aktivieren", 225, danger: true);
         stopNow.Click += async (_, _) => await StopCurrentSelectionAsync();
-        _toolTip.SetToolTip(stopNow, "Zeigt zuerst eine Vorschau und beendet danach die ausgewählten Programme.");
+        _toolTip.SetToolTip(stopNow, Localization.T("Zeigt zuerst eine Vorschau und beendet danach die ausgewählten Programme."));
 
         buttons.Controls.Add(up);
         buttons.Controls.Add(down);
@@ -696,7 +698,7 @@ public sealed class MainForm : Form
 
         var fromSelection = MakeButton("Aktuelle Prozessauswahl schützen", 235);
         fromSelection.Click += (_, _) => ProtectCurrentSelection();
-        _toolTip.SetToolTip(fromSelection, "Nimmt die momentan ausgewählten Prozessnamen in die Schutzliste auf.");
+        _toolTip.SetToolTip(fromSelection, Localization.T("Nimmt die momentan ausgewählten Prozessnamen in die Schutzliste auf."));
 
         selectRow.Controls.Add(fromSelection);
 
@@ -720,7 +722,7 @@ public sealed class MainForm : Form
             Padding = new Padding(10)
         };
 
-        _minimizeToTray.Text = "Beim Minimieren in den Infobereich verschieben";
+        _minimizeToTray.Text = Localization.T("Beim Minimieren in den Infobereich verschieben");
         _minimizeToTray.AutoSize = true;
         _minimizeToTray.ForeColor = TextColor;
         _minimizeToTray.Margin = new Padding(0, 0, 0, 14);
@@ -729,6 +731,49 @@ public sealed class MainForm : Form
             _settings.MinimizeToTray = _minimizeToTray.Checked;
             SaveSettings();
         };
+
+        var languageTitle = MakeLabel("Sprache / Language", 10, FontStyle.Bold);
+        languageTitle.Margin = new Padding(0, 0, 0, 6);
+
+        _languageBox.DropDownStyle = ComboBoxStyle.DropDownList;
+        _languageBox.Width = 190;
+        _languageBox.BackColor = Panel2;
+        _languageBox.ForeColor = TextColor;
+        _languageBox.Items.AddRange(new object[] { "Deutsch", "English" });
+        _languageBox.Margin = new Padding(0, 0, 0, 4);
+        _languageBox.SelectedIndexChanged += (_, _) =>
+        {
+            if (_languageBox.SelectedIndex < 0)
+                return;
+
+            var language = _languageBox.SelectedIndex == 1 ? "en" : "de";
+            if (string.Equals(language, _settings.Language, StringComparison.OrdinalIgnoreCase))
+                return;
+
+            _settings.Language = language;
+            SaveSettings();
+
+            var answer = MessageBox.Show(
+                Localization.T("Die neue Sprache wird nach einem Neustart verwendet. ProcessSet Manager jetzt neu starten?"),
+                Localization.T("Sprache geändert"),
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (answer == DialogResult.Yes)
+            {
+                _trayIcon.Visible = false;
+                Application.Restart();
+                Environment.Exit(0);
+            }
+        };
+
+        var languageInfo = MakeLabel(
+            "Sprachänderungen werden nach einem Neustart der Anwendung wirksam.",
+            9,
+            FontStyle.Regular);
+        languageInfo.ForeColor = Muted;
+        languageInfo.MaximumSize = new Size(520, 0);
+        languageInfo.Margin = new Padding(0, 0, 0, 18);
 
         var builtInTitle = MakeLabel("Immer geschützte Windows-Prozesse", 10, FontStyle.Bold);
         builtInTitle.Margin = new Padding(0, 8, 0, 6);
@@ -741,7 +786,7 @@ public sealed class MainForm : Form
         builtIn.MaximumSize = new Size(520, 0);
 
         var pathInfo = MakeLabel(
-            $"Konfiguration:\n{_profileStore.BaseDirectory}",
+            Localization.F("Konfiguration:\n{0}", _profileStore.BaseDirectory),
             9,
             FontStyle.Regular);
         pathInfo.ForeColor = Muted;
@@ -749,6 +794,9 @@ public sealed class MainForm : Form
         pathInfo.Margin = new Padding(0, 22, 0, 0);
 
         generalFlow.Controls.Add(_minimizeToTray);
+        generalFlow.Controls.Add(languageTitle);
+        generalFlow.Controls.Add(_languageBox);
+        generalFlow.Controls.Add(languageInfo);
         generalFlow.Controls.Add(builtInTitle);
         generalFlow.Controls.Add(builtIn);
         generalFlow.Controls.Add(pathInfo);
@@ -781,43 +829,7 @@ public sealed class MainForm : Form
             ScrollBars = RichTextBoxScrollBars.Vertical
         };
 
-        help.Text =
-            "PROCESSSET MANAGER – KURZANLEITUNG\r\n\r\n" +
-            "1. Profil erstellen\r\n" +
-            "Im Tab „Prozesse“ die gewünschten Programme anhaken. Rechts wird die Reihenfolge angezeigt. " +
-            "Mit Hoch/Runter kannst du sie ändern. Danach „Als Profil speichern“ wählen.\r\n\r\n" +
-
-            "2. Modus aktivieren\r\n" +
-            "Im Dashboard oder unter „Profile“ ein Profil auswählen und aktivieren. Vor dem Beenden erscheint eine Vorschau. " +
-            "Dort siehst du, welche Programme gerade laufen, welche geschützt sind und welche später automatisch wieder gestartet werden können.\r\n\r\n" +
-
-            "3. Modus beenden & wiederherstellen\r\n" +
-            "Solange ein Modus aktiv ist, speichert ProcessSet genau eine Wiederherstellungssitzung. " +
-            "„Modus beenden & wiederherstellen“ startet die zuvor erkannten Programme wieder. " +
-            "Offene Dokumente, Tabs oder interne Sitzungen kann nur das jeweilige Programm selbst wiederherstellen.\r\n\r\n" +
-
-            "4. Bedeutung der Spalte ↻\r\n" +
-            "„Ja“ bedeutet: ProcessSet kann für diesen laufenden Prozess einen lesbaren EXE-Pfad ermitteln und ihn daher grundsätzlich später neu starten. " +
-            "„Nein“ bedeutet nicht, dass das Beenden fehlschlägt – nur die automatische Wiederherstellung ist nicht garantiert.\r\n\r\n" +
-
-            "5. Schutzliste\r\n" +
-            "Unter „Einstellungen“ kannst du Prozessnamen schützen. Geschützte Programme werden von ProcessSet nicht beendet – auch dann nicht, " +
-            "wenn sie in einem älteren Profil gespeichert sind.\r\n\r\n" +
-
-            "6. System-Tray\r\n" +
-            "Wenn „Beim Minimieren in den Infobereich verschieben“ aktiv ist, läuft ProcessSet neben der Uhr weiter. " +
-            "Per Rechtsklick auf das Tray-Icon kannst du Profile aktivieren, den aktuellen Modus wiederherstellen oder das Hauptfenster öffnen.\r\n\r\n" +
-
-            "7. Export\r\n" +
-            "Profile können weiterhin als TXT, PowerShell- oder Batch-Datei exportiert werden. " +
-            "Diese Exporte verwenden das ursprüngliche Prinzip und arbeiten mit Prozessnamen.\r\n\r\n" +
-
-            "SICHERHEIT / GRENZEN\r\n" +
-            "ProcessSet versucht Programme zunächst normal zu schließen und erzwingt das Beenden erst nach einem Timeout. " +
-            "Programme mit ungespeicherten Daten können beim erzwungenen Beenden Daten verlieren. " +
-            "Kritische Windows-Prozesse sind grundsätzlich geschützt. Für erhöht gestartete Programme kann ProcessSet selbst Administratorrechte benötigen.\r\n\r\n" +
-
-            "Tipp: Wenn du unsicher bist, prüfe die Vorschau. Besonders wichtig ist die Zeile „nicht automatisch wiederherstellbar“.";
+        help.Text = Localization.HelpText;
 
         page.Controls.Add(help);
         return page;
@@ -848,7 +860,7 @@ public sealed class MainForm : Form
         _statusStrip.ForeColor = TextColor;
         _statusLabel.Spring = true;
         _statusLabel.TextAlign = ContentAlignment.MiddleLeft;
-        _statusLabel.Text = "Bereit";
+        _statusLabel.Text = Localization.T("Bereit");
         _statusStrip.Items.Add(_statusLabel);
         Controls.Add(_statusStrip);
         _statusStrip.BringToFront();
@@ -880,8 +892,8 @@ public sealed class MainForm : Form
 
         var status = new ToolStripMenuItem(
             _modeState.IsActive
-                ? $"● Aktiv: {_modeState.ProfileName ?? "Manuelle Auswahl"}"
-                : "○ Kein aktiver Modus")
+                ? Localization.F("● Aktiv: {0}", DisplayModeName(_modeState.ProfileName))
+                : Localization.T("○ Kein aktiver Modus"))
         {
             Enabled = false
         };
@@ -889,19 +901,19 @@ public sealed class MainForm : Form
 
         if (_modeState.IsActive)
         {
-            var endMode = new ToolStripMenuItem("Modus beenden & wiederherstellen");
+            var endMode = new ToolStripMenuItem(Localization.T("Modus beenden & wiederherstellen"));
             endMode.Click += (_, _) => RestoreLastSession(fromActiveMode: true);
             _trayMenu.Items.Add(endMode);
         }
 
         _trayMenu.Items.Add(new ToolStripSeparator());
 
-        var profiles = new ToolStripMenuItem("Profil aktivieren");
+        var profiles = new ToolStripMenuItem(Localization.T("Profil aktivieren"));
         var names = _profileStore.GetProfileNames();
 
         if (names.Count == 0)
         {
-            profiles.DropDownItems.Add(new ToolStripMenuItem("(keine Profile)") { Enabled = false });
+            profiles.DropDownItems.Add(new ToolStripMenuItem(Localization.T("(keine Profile)")) { Enabled = false });
         }
         else
         {
@@ -920,10 +932,10 @@ public sealed class MainForm : Form
         _trayMenu.Items.Add(profiles);
         _trayMenu.Items.Add(new ToolStripSeparator());
 
-        var show = new ToolStripMenuItem("Fenster öffnen");
+        var show = new ToolStripMenuItem(Localization.T("Fenster öffnen"));
         show.Click += (_, _) => ShowMainWindow();
 
-        var exit = new ToolStripMenuItem("Beenden");
+        var exit = new ToolStripMenuItem(Localization.T("Beenden"));
         exit.Click += (_, _) => Close();
 
         _trayMenu.Items.Add(show);
@@ -967,14 +979,14 @@ public sealed class MainForm : Form
             Width = 34
         });
 
-        _processGrid.Columns.Add("Name", "Prozess");
+        _processGrid.Columns.Add("Name", Localization.T("Prozess"));
         _processGrid.Columns.Add("Pid", "PID");
-        _processGrid.Columns.Add("Kind", "Typ");
+        _processGrid.Columns.Add("Kind", Localization.T("Typ"));
         _processGrid.Columns.Add("Ram", "RAM");
-        _processGrid.Columns.Add("Protected", "Schutz");
+        _processGrid.Columns.Add("Protected", Localization.T("Schutz"));
         _processGrid.Columns.Add("Restorable", "↻");
-        _processGrid.Columns.Add("Title", "Fenstertitel");
-        _processGrid.Columns.Add("Path", "Pfad");
+        _processGrid.Columns.Add("Title", Localization.T("Fenstertitel"));
+        _processGrid.Columns.Add("Path", Localization.T("Pfad"));
 
         _processGrid.Columns["Name"]!.Width = 160;
         _processGrid.Columns["Pid"]!.Width = 65;
@@ -983,9 +995,9 @@ public sealed class MainForm : Form
         _processGrid.Columns["Protected"]!.Width = 65;
         _processGrid.Columns["Restorable"]!.Width = 50;
         _processGrid.Columns["Restorable"]!.HeaderCell.ToolTipText =
-            "Ja = ein lesbarer EXE-Pfad ist vorhanden und der Prozess kann grundsätzlich automatisch neu gestartet werden.";
+            Localization.T("Ja = ein lesbarer EXE-Pfad ist vorhanden und der Prozess kann grundsätzlich automatisch neu gestartet werden.");
         _processGrid.Columns["Protected"]!.HeaderCell.ToolTipText =
-            "Geschützte Prozesse werden von ProcessSet niemals beendet.";
+            Localization.T("Geschützte Prozesse werden von ProcessSet niemals beendet.");
         _processGrid.Columns["Title"]!.Width = 230;
         _processGrid.Columns["Path"]!.Width = 380;
 
@@ -1010,15 +1022,15 @@ public sealed class MainForm : Form
 
     private void RefreshProcesses()
     {
-        SetStatus("Prozesse werden geladen …");
+        SetStatus(Localization.T("Prozesse werden geladen …"));
         Application.DoEvents();
 
         _allProcesses.Clear();
         _allProcesses.AddRange(_processService.GetProcesses());
         RefreshProcessGrid();
 
-        SetStatus($"{_allProcesses.Count} Prozesse geladen | {_selectedOrder.Count} ausgewählt");
-        Log($"{_allProcesses.Count} Prozesse eingelesen.");
+        SetStatus(Localization.F("{0} Prozesse geladen | {1} ausgewählt", _allProcesses.Count, _selectedOrder.Count));
+        Log(Localization.F("{0} Prozesse eingelesen.", _allProcesses.Count));
     }
 
     private void RefreshProcessGrid()
@@ -1036,7 +1048,8 @@ public sealed class MainForm : Form
                 p.Name.Contains(search, StringComparison.OrdinalIgnoreCase) ||
                 p.Title.Contains(search, StringComparison.OrdinalIgnoreCase) ||
                 p.Path.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                p.Kind.Contains(search, StringComparison.OrdinalIgnoreCase));
+                p.Kind.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                Localization.T(p.Kind).Contains(search, StringComparison.OrdinalIgnoreCase));
         }
 
         _updatingChecks = true;
@@ -1053,10 +1066,10 @@ public sealed class MainForm : Form
                     selected,
                     p.Name,
                     p.Id,
-                    p.Kind,
+                    Localization.T(p.Kind),
                     p.MemoryText,
-                    protectedProcess ? "Ja" : "",
-                    IsRestorablePath(p.Path) ? "Ja" : "Nein",
+                    protectedProcess ? Localization.T("Ja") : "",
+                    IsRestorablePath(p.Path) ? Localization.T("Ja") : Localization.T("Nein"),
                     p.Title,
                     p.Path);
             }
@@ -1091,7 +1104,7 @@ public sealed class MainForm : Form
                 _updatingChecks = false;
             }
 
-            SetStatus($"{name} steht auf der Schutzliste.");
+            SetStatus(Localization.F("{0} steht auf der Schutzliste.", name));
             return;
         }
 
@@ -1117,7 +1130,7 @@ public sealed class MainForm : Form
         }
 
         RefreshSelectedList();
-        SetStatus($"{_selectedOrder.Count} Programme ausgewählt");
+        SetStatus(Localization.F("{0} Programme ausgewählt", _selectedOrder.Count));
     }
 
     private void RefreshSelectedList()
@@ -1197,7 +1210,7 @@ public sealed class MainForm : Form
     {
         if (_selectedOrder.Count == 0)
         {
-            MessageBox.Show("Bitte zuerst Programme auswählen.", "Keine Auswahl",
+            MessageBox.Show(Localization.T("Bitte zuerst Programme auswählen."), Localization.T("Keine Auswahl"),
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
@@ -1206,7 +1219,7 @@ public sealed class MainForm : Form
 
         if (string.IsNullOrWhiteSpace(name))
         {
-            using var prompt = new ProfileNameForm("Profil speichern");
+            using var prompt = new ProfileNameForm(Localization.T("Profil speichern"));
             if (prompt.ShowDialog(this) != DialogResult.OK)
                 return;
 
@@ -1218,12 +1231,12 @@ public sealed class MainForm : Form
             _profileStore.SaveProfile(BuildProfile(name!));
             _profileName.Text = name;
             RefreshProfileLists();
-            SetStatus($"Profil '{name}' gespeichert");
-            Log($"Profil '{name}' gespeichert.");
+            SetStatus(Localization.F("Profil '{0}' gespeichert", name));
+            Log(Localization.F("Profil '{0}' gespeichert.", name));
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "Profil speichern",
+            MessageBox.Show(ex.Message, Localization.T("Profil speichern"),
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
@@ -1264,7 +1277,7 @@ public sealed class MainForm : Form
     {
         if (_dashboardProfiles.SelectedItem is not string name)
         {
-            _dashboardProfileDetails.Text = "Keine Profile gespeichert.";
+            _dashboardProfileDetails.Text = Localization.T("Keine Profile gespeichert.");
             return;
         }
 
@@ -1273,10 +1286,10 @@ public sealed class MainForm : Form
             var profile = _profileStore.LoadProfile(name);
             var last = profile.LastExecutedAt.HasValue
                 ? profile.LastExecutedAt.Value.ToString("g")
-                : "noch nie";
+                : Localization.T("noch nie");
 
             _dashboardProfileDetails.Text =
-                $"{profile.Processes.Count} Programme · zuletzt aktiviert: {last}";
+                Localization.F("{0} Programme · zuletzt aktiviert: {1}", profile.Processes.Count, last);
         }
         catch
         {
@@ -1288,7 +1301,7 @@ public sealed class MainForm : Form
     {
         if (_dashboardProfiles.SelectedItem is not string name)
         {
-            MessageBox.Show("Bitte zuerst ein Profil auswählen.", "Profil",
+            MessageBox.Show(Localization.T("Bitte zuerst ein Profil auswählen."), Localization.T("Profil"),
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
@@ -1307,9 +1320,9 @@ public sealed class MainForm : Form
         if (_modeState.IsActive)
         {
             MessageBox.Show(
-                $"Der Modus '{_modeState.ProfileName ?? "Manuelle Auswahl"}' ist bereits aktiv.\n\n" +
-                "Beende und stelle diesen Modus zuerst wieder her, bevor ein anderes Profil aktiviert wird.",
-                "Modus bereits aktiv",
+                Localization.F("Der Modus '{0}' ist bereits aktiv.\n\n", DisplayModeName(_modeState.ProfileName)) +
+                Localization.T("Beende und stelle diesen Modus zuerst wieder her, bevor ein anderes Profil aktiviert wird."),
+                Localization.T("Modus bereits aktiv"),
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
             return;
@@ -1333,8 +1346,8 @@ public sealed class MainForm : Form
             if (preview.RunningCount == 0)
             {
                 MessageBox.Show(
-                    "Von diesem Profil läuft aktuell kein beendbarer Prozess. Der Modus wurde daher nicht aktiviert.",
-                    "Nichts zu beenden",
+                    Localization.T("Von diesem Profil läuft aktuell kein beendbarer Prozess. Der Modus wurde daher nicht aktiviert."),
+                    Localization.T("Nichts zu beenden"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
                 return;
@@ -1383,17 +1396,20 @@ public sealed class MainForm : Form
             RefreshProfileLists();
             RefreshProcesses();
 
-            SetStatus($"Modus '{name}' ist aktiv");
-            Log(
-                $"Modus '{name}' aktiviert. Beendet: {result.StoppedCount}, " +
-                $"geschützt: {result.ProtectedCount}, Fehler: {result.ErrorCount}, " +
-                $"wiederherstellbar: {snapshot.Processes.Count}.");
+            SetStatus(Localization.F("Modus '{0}' ist aktiv", name));
+            Log(Localization.F(
+                "Modus '{0}' aktiviert. Beendet: {1}, geschützt: {2}, Fehler: {3}, wiederherstellbar: {4}.",
+                name,
+                result.StoppedCount,
+                result.ProtectedCount,
+                result.ErrorCount,
+                snapshot.Processes.Count));
 
             ShowActivationResult(name, result, snapshot.Processes.Count);
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "Modus aktivieren",
+            MessageBox.Show(ex.Message, Localization.T("Modus aktivieren"),
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
@@ -1406,8 +1422,8 @@ public sealed class MainForm : Form
         if (_modeState.IsActive)
         {
             MessageBox.Show(
-                "Es ist bereits ein Modus aktiv. Beende ihn zuerst, damit die Wiederherstellungssitzung nicht überschrieben wird.",
-                "Modus bereits aktiv",
+                Localization.T("Es ist bereits ein Modus aktiv. Beende ihn zuerst, damit die Wiederherstellungssitzung nicht überschrieben wird."),
+                Localization.T("Modus bereits aktiv"),
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
             return;
@@ -1417,14 +1433,14 @@ public sealed class MainForm : Form
             _selectedOrder,
             _settings.ProtectedProcesses);
 
-        if (!ShowModePreview("Manuelle Auswahl", preview))
+        if (!ShowModePreview(Localization.T("Manuelle Auswahl"), preview))
             return;
 
         if (preview.RunningCount == 0)
         {
             MessageBox.Show(
-                "Von der aktuellen Auswahl läuft kein beendbarer Prozess. Der Modus wurde daher nicht aktiviert.",
-                "Nichts zu beenden",
+                Localization.T("Von der aktuellen Auswahl läuft kein beendbarer Prozess. Der Modus wurde daher nicht aktiviert."),
+                Localization.T("Nichts zu beenden"),
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
             return;
@@ -1460,7 +1476,7 @@ public sealed class MainForm : Form
         _modeState = new ModeState
         {
             IsActive = true,
-            ProfileName = "Manuelle Auswahl",
+            ProfileName = null,
             ActivatedAt = DateTime.Now,
             RestorableCount = snapshot.Processes.Count
         };
@@ -1469,11 +1485,13 @@ public sealed class MainForm : Form
         RefreshModeUi();
         RefreshProcesses();
 
-        Log(
-            $"Temporärer Modus aktiviert. Beendet: {result.StoppedCount}, " +
-            $"Fehler: {result.ErrorCount}, wiederherstellbar: {snapshot.Processes.Count}.");
+        Log(Localization.F(
+            "Temporärer Modus aktiviert. Beendet: {0}, Fehler: {1}, wiederherstellbar: {2}.",
+            result.StoppedCount,
+            result.ErrorCount,
+            snapshot.Processes.Count));
 
-        ShowActivationResult("Manuelle Auswahl", result, snapshot.Processes.Count);
+        ShowActivationResult(Localization.T("Manuelle Auswahl"), result, snapshot.Processes.Count);
     }
 
     private void RestoreLastSession(bool fromActiveMode)
@@ -1485,8 +1503,8 @@ public sealed class MainForm : Form
             if (snapshot is null)
             {
                 MessageBox.Show(
-                    "Es ist keine Wiederherstellungssitzung gespeichert.",
-                    "Wiederherstellen",
+                    Localization.T("Es ist keine Wiederherstellungssitzung gespeichert."),
+                    Localization.T("Wiederherstellen"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
                 return;
@@ -1497,9 +1515,8 @@ public sealed class MainForm : Form
                 if (fromActiveMode && _modeState.IsActive)
                 {
                     var clear = MessageBox.Show(
-                        "Für diesen Modus konnten keine Programme mit einem wiederstartbaren EXE-Pfad gespeichert werden.\n\n" +
-                        "Den Modus trotzdem beenden?",
-                        "Modus beenden",
+                        Localization.T("Für diesen Modus konnten keine Programme mit einem wiederstartbaren EXE-Pfad gespeichert werden.\n\nDen Modus trotzdem beenden?"),
+                        Localization.T("Modus beenden"),
                         MessageBoxButtons.YesNo,
                         MessageBoxIcon.Question);
 
@@ -1509,8 +1526,8 @@ public sealed class MainForm : Form
                 else
                 {
                     MessageBox.Show(
-                        "Die letzte Sitzung enthält keine wiederherstellbaren Programme.",
-                        "Wiederherstellen",
+                        Localization.T("Die letzte Sitzung enthält keine wiederherstellbaren Programme."),
+                        Localization.T("Wiederherstellen"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
                 }
@@ -1518,9 +1535,9 @@ public sealed class MainForm : Form
                 return;
             }
 
-            var title = fromActiveMode ? "Modus beenden & wiederherstellen" : "Wiederherstellen";
+            var title = fromActiveMode ? Localization.T("Modus beenden & wiederherstellen") : Localization.T("Wiederherstellen");
             var answer = MessageBox.Show(
-                $"Sitzung vom {snapshot.Created:g} wiederherstellen?\n\n" +
+                Localization.F("Sitzung vom {0:g} wiederherstellen?\n\n", snapshot.Created) +
                 string.Join(Environment.NewLine, snapshot.Processes.Select(p => p.Name)),
                 title,
                 MessageBoxButtons.YesNo,
@@ -1540,50 +1557,52 @@ public sealed class MainForm : Form
             if (_modeState.IsActive)
                 ClearActiveMode();
 
-            Log(
-                $"Wiederherstellung abgeschlossen. Gestartet: {result.StartedCount}, " +
-                $"bereits aktiv: {result.AlreadyRunningCount}, Fehler: {result.ErrorCount}.");
+            Log(Localization.F(
+                "Wiederherstellung abgeschlossen. Gestartet: {0}, bereits aktiv: {1}, Fehler: {2}.",
+                result.StartedCount,
+                result.AlreadyRunningCount,
+                result.ErrorCount));
 
             ShowRestoreResult(result);
             RefreshProcesses();
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "Wiederherstellen",
+            MessageBox.Show(ex.Message, Localization.T("Wiederherstellen"),
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 
     private void ClearActiveMode()
     {
-        var previous = _modeState.ProfileName ?? "Modus";
+        var previous = DisplayModeName(_modeState.ProfileName);
         _modeState = new ModeState();
         _profileStore.ClearModeState();
         RefreshModeUi();
-        SetStatus($"{previous} beendet");
-        Log($"{previous} beendet.");
+        SetStatus(Localization.F("{0} beendet", previous));
+        Log(Localization.F("{0} beendet.", previous));
     }
 
     private void RefreshModeUi()
     {
         if (_modeState.IsActive)
         {
-            _modeStatusLabel.Text = $"● {_modeState.ProfileName ?? "Modus"} aktiv";
+            _modeStatusLabel.Text = Localization.F("● {0} aktiv", DisplayModeName(_modeState.ProfileName));
             _modeStatusLabel.ForeColor = Active;
 
             var since = _modeState.ActivatedAt.HasValue
                 ? _modeState.ActivatedAt.Value.ToString("g")
-                : "unbekannt";
+                : Localization.T("unbekannt");
 
             _modeDetailsLabel.Text =
-                $"Aktiv seit {since} · {_modeState.RestorableCount} Programme wiederherstellbar";
+                Localization.F("Aktiv seit {0} · {1} Programme wiederherstellbar", since, _modeState.RestorableCount);
             _modeActionButton.Visible = true;
         }
         else
         {
-            _modeStatusLabel.Text = "○ Kein aktiver Modus";
+            _modeStatusLabel.Text = Localization.T("○ Kein aktiver Modus");
             _modeStatusLabel.ForeColor = Muted;
-            _modeDetailsLabel.Text = "Wähle links ein Profil und aktiviere es, oder erstelle im Tab „Prozesse“ eine manuelle Auswahl.";
+            _modeDetailsLabel.Text = Localization.T("Wähle links ein Profil und aktiviere es, oder erstelle im Tab „Prozesse“ eine manuelle Auswahl.");
             _modeActionButton.Visible = false;
         }
 
@@ -1598,10 +1617,10 @@ public sealed class MainForm : Form
             _profileName.Text = profile.Name;
 
             var last = profile.LastExecutedAt.HasValue
-                ? $" · zuletzt {profile.LastExecutedAt.Value:g}"
+                ? Localization.F(" · zuletzt {0:g}", profile.LastExecutedAt.Value)
                 : string.Empty;
 
-            SetStatus($"{profile.Name}: {profile.Processes.Count} Programme{last}");
+            SetStatus(Localization.F("{0}: {1} Programme{2}", profile.Name, profile.Processes.Count, last));
         }
         catch
         {
@@ -1624,7 +1643,7 @@ public sealed class MainForm : Form
             {
                 if (IsUserProtected(target.Name))
                 {
-                    Log($"{target.Name}: wegen Schutzliste nicht in die Auswahl übernommen.");
+                    Log(Localization.F("{0}: wegen Schutzliste nicht in die Auswahl übernommen.", target.Name));
                     continue;
                 }
 
@@ -1635,11 +1654,11 @@ public sealed class MainForm : Form
             _profileName.Text = profile.Name;
             RefreshProcessGrid();
             _tabs.SelectedIndex = 1;
-            SetStatus($"Profil '{name}' in Auswahl geladen");
+            SetStatus(Localization.F("Profil '{0}' in Auswahl geladen", name));
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "Profil laden",
+            MessageBox.Show(ex.Message, Localization.T("Profil laden"),
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
@@ -1653,14 +1672,14 @@ public sealed class MainForm : Form
             string.Equals(_modeState.ProfileName, oldName, StringComparison.OrdinalIgnoreCase))
         {
             MessageBox.Show(
-                "Das aktuell aktive Profil kann erst nach dem Beenden des Modus umbenannt werden.",
-                "Profil aktiv",
+                Localization.T("Das aktuell aktive Profil kann erst nach dem Beenden des Modus umbenannt werden."),
+                Localization.T("Profil aktiv"),
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
             return;
         }
 
-        using var prompt = new ProfileNameForm("Profil umbenennen", oldName);
+        using var prompt = new ProfileNameForm(Localization.T("Profil umbenennen"), oldName);
         if (prompt.ShowDialog(this) != DialogResult.OK)
             return;
 
@@ -1669,11 +1688,11 @@ public sealed class MainForm : Form
             _profileStore.RenameProfile(oldName, prompt.ProfileName);
             RefreshProfileLists();
             SelectProfile(prompt.ProfileName);
-            Log($"Profil '{oldName}' in '{prompt.ProfileName}' umbenannt.");
+            Log(Localization.F("Profil '{0}' in '{1}' umbenannt.", oldName, prompt.ProfileName));
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "Profil umbenennen",
+            MessageBox.Show(ex.Message, Localization.T("Profil umbenennen"),
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
@@ -1683,7 +1702,7 @@ public sealed class MainForm : Form
         if (_manageProfiles.SelectedItem is not string sourceName)
             return;
 
-        using var prompt = new ProfileNameForm("Profil duplizieren", sourceName + " Kopie");
+        using var prompt = new ProfileNameForm(Localization.T("Profil duplizieren"), sourceName + " " + Localization.T("Kopie"));
         if (prompt.ShowDialog(this) != DialogResult.OK)
             return;
 
@@ -1692,11 +1711,11 @@ public sealed class MainForm : Form
             _profileStore.DuplicateProfile(sourceName, prompt.ProfileName);
             RefreshProfileLists();
             SelectProfile(prompt.ProfileName);
-            Log($"Profil '{sourceName}' als '{prompt.ProfileName}' dupliziert.");
+            Log(Localization.F("Profil '{0}' als '{1}' dupliziert.", sourceName, prompt.ProfileName));
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "Profil duplizieren",
+            MessageBox.Show(ex.Message, Localization.T("Profil duplizieren"),
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
@@ -1719,16 +1738,16 @@ public sealed class MainForm : Form
             string.Equals(_modeState.ProfileName, name, StringComparison.OrdinalIgnoreCase))
         {
             MessageBox.Show(
-                "Das aktuell aktive Profil kann erst nach dem Beenden des Modus gelöscht werden.",
-                "Profil aktiv",
+                Localization.T("Das aktuell aktive Profil kann erst nach dem Beenden des Modus gelöscht werden."),
+                Localization.T("Profil aktiv"),
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
             return;
         }
 
         if (MessageBox.Show(
-                $"Profil '{name}' wirklich löschen?",
-                "Profil löschen",
+                Localization.F("Profil '{0}' wirklich löschen?", name),
+                Localization.T("Profil löschen"),
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question) != DialogResult.Yes)
             return;
@@ -1736,7 +1755,7 @@ public sealed class MainForm : Form
         _profileStore.DeleteProfile(name);
         RefreshProfileLists();
         _profileName.Clear();
-        Log($"Profil '{name}' gelöscht.");
+        Log(Localization.F("Profil '{0}' gelöscht.", name));
     }
 
     private void ExportCurrentProfile(string type)
@@ -1754,7 +1773,7 @@ public sealed class MainForm : Form
 
         if (profile is null || profile.Processes.Count == 0)
         {
-            MessageBox.Show("Kein Profil bzw. keine Auswahl zum Exportieren vorhanden.", "Export",
+            MessageBox.Show(Localization.T("Kein Profil bzw. keine Auswahl zum Exportieren vorhanden."), Localization.T("Export"),
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
@@ -1765,15 +1784,15 @@ public sealed class MainForm : Form
         switch (type)
         {
             case "txt":
-                dialog.Filter = "Textdatei (*.txt)|*.txt";
+                dialog.Filter = Localization.T("Textdatei (*.txt)|*.txt");
                 dialog.FileName = profile.Name + ".txt";
                 break;
             case "ps1":
-                dialog.Filter = "PowerShell-Skript (*.ps1)|*.ps1";
+                dialog.Filter = Localization.T("PowerShell-Skript (*.ps1)|*.ps1");
                 dialog.FileName = profile.Name + ".ps1";
                 break;
             case "bat":
-                dialog.Filter = "Batch-Datei (*.bat)|*.bat";
+                dialog.Filter = Localization.T("Batch-Datei (*.bat)|*.bat");
                 dialog.FileName = profile.Name + ".bat";
                 break;
             default:
@@ -1789,12 +1808,12 @@ public sealed class MainForm : Form
             if (type == "ps1") ExportService.ExportPowerShell(dialog.FileName, names);
             if (type == "bat") ExportService.ExportBatch(dialog.FileName, names);
 
-            SetStatus($"Exportiert: {dialog.FileName}");
-            Log($"Profil '{profile.Name}' als {type.ToUpperInvariant()} exportiert.");
+            SetStatus(Localization.F("Exportiert: {0}", dialog.FileName));
+            Log(Localization.F("Profil '{0}' als {1} exportiert.", profile.Name, type.ToUpperInvariant()));
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "Export",
+            MessageBox.Show(ex.Message, Localization.T("Export"),
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
@@ -1802,6 +1821,8 @@ public sealed class MainForm : Form
     private void LoadSettingsIntoUi()
     {
         _minimizeToTray.Checked = _settings.MinimizeToTray;
+        _languageBox.SelectedIndex =
+            string.Equals(_settings.Language, "en", StringComparison.OrdinalIgnoreCase) ? 1 : 0;
         RefreshProtectedList();
     }
 
@@ -1815,8 +1836,8 @@ public sealed class MainForm : Form
                 n => n.Equals(name, StringComparison.OrdinalIgnoreCase)))
         {
             MessageBox.Show(
-                $"{name} ist bereits fest durch ProcessSet geschützt.",
-                "Bereits geschützt",
+                Localization.F("{0} ist bereits fest durch ProcessSet geschützt.", name),
+                Localization.T("Bereits geschützt"),
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
             return;
@@ -1834,7 +1855,7 @@ public sealed class MainForm : Form
         RefreshProtectedList();
         RefreshProcessGrid();
 
-        Log($"{name} zur Schutzliste hinzugefügt.");
+        Log(Localization.F("{0} zur Schutzliste hinzugefügt.", name));
     }
 
     private void RemoveProtectedProcess()
@@ -1848,7 +1869,7 @@ public sealed class MainForm : Form
         SaveSettings();
         RefreshProtectedList();
         RefreshProcessGrid();
-        Log($"{name} aus Schutzliste entfernt.");
+        Log(Localization.F("{0} aus Schutzliste entfernt.", name));
     }
 
     private void ProtectCurrentSelection()
@@ -1856,8 +1877,8 @@ public sealed class MainForm : Form
         if (_selectedOrder.Count == 0)
         {
             MessageBox.Show(
-                "Es sind aktuell keine Programme ausgewählt.",
-                "Schutzliste",
+                Localization.T("Es sind aktuell keine Programme ausgewählt."),
+                Localization.T("Schutzliste"),
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
             return;
@@ -1877,7 +1898,7 @@ public sealed class MainForm : Form
         SaveSettings();
         RefreshProtectedList();
         RefreshProcessGrid();
-        Log($"{names.Count} Prozessnamen aus der aktuellen Auswahl geschützt.");
+        Log(Localization.F("{0} Prozessnamen aus der aktuellen Auswahl geschützt.", names.Count));
     }
 
     private void RefreshProtectedList()
@@ -1910,12 +1931,24 @@ public sealed class MainForm : Form
         }
         catch (Exception ex)
         {
-            Log($"Einstellungen konnten nicht gespeichert werden: {ex.Message}");
+            Log(Localization.F("Einstellungen konnten nicht gespeichert werden: {0}", ex.Message));
         }
     }
 
     private static bool IsRestorablePath(string? path) =>
         !string.IsNullOrWhiteSpace(path) && File.Exists(path);
+
+    private string DisplayModeName(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name) ||
+            name.Equals("Manuelle Auswahl", StringComparison.OrdinalIgnoreCase) ||
+            name.Equals("Manual selection", StringComparison.OrdinalIgnoreCase))
+        {
+            return Localization.T("Manuelle Auswahl");
+        }
+
+        return name;
+    }
 
     private bool ShowModePreview(string modeName, ModePreview preview)
     {
@@ -1927,29 +1960,29 @@ public sealed class MainForm : Form
     {
         var lines = new List<string>
         {
-            $"Modus „{modeName}“ ist aktiv.",
+            Localization.F("Modus „{0}“ ist aktiv.", modeName),
             "",
-            $"Beendet: {result.StoppedCount}",
-            $"Davon erzwungen beendet: {result.ForcedCount}",
-            $"Liefen nicht: {result.NotRunningCount}",
-            $"Geschützt / übersprungen: {result.ProtectedCount}",
-            $"Fehler: {result.ErrorCount}",
-            $"Für Wiederherstellung gespeichert: {restorableCount}"
+            Localization.F("Beendet: {0}", result.StoppedCount),
+            Localization.F("Davon erzwungen beendet: {0}", result.ForcedCount),
+            Localization.F("Liefen nicht: {0}", result.NotRunningCount),
+            Localization.F("Geschützt / übersprungen: {0}", result.ProtectedCount),
+            Localization.F("Fehler: {0}", result.ErrorCount),
+            Localization.F("Für Wiederherstellung gespeichert: {0}", restorableCount)
         };
 
         if (result.Errors.Count > 0)
         {
             lines.Add("");
-            lines.Add("Fehlerdetails:");
+            lines.Add(Localization.T("Fehlerdetails:"));
             lines.AddRange(result.Errors.Take(8));
 
             if (result.Errors.Count > 8)
-                lines.Add($"… und {result.Errors.Count - 8} weitere.");
+                lines.Add(Localization.F("… und {0} weitere.", result.Errors.Count - 8));
         }
 
         MessageBox.Show(
             string.Join(Environment.NewLine, lines),
-            "Modus aktiviert – Ergebnis",
+            Localization.T("Modus aktiviert – Ergebnis"),
             MessageBoxButtons.OK,
             result.ErrorCount > 0 ? MessageBoxIcon.Warning : MessageBoxIcon.Information);
     }
@@ -1958,27 +1991,27 @@ public sealed class MainForm : Form
     {
         var lines = new List<string>
         {
-            "Wiederherstellung abgeschlossen.",
+            Localization.T("Wiederherstellung abgeschlossen."),
             "",
-            $"Gestartet: {result.StartedCount}",
-            $"Liefen bereits: {result.AlreadyRunningCount}",
-            $"EXE nicht gefunden: {result.MissingFileCount}",
-            $"Fehler: {result.ErrorCount}"
+            Localization.F("Gestartet: {0}", result.StartedCount),
+            Localization.F("Liefen bereits: {0}", result.AlreadyRunningCount),
+            Localization.F("EXE nicht gefunden: {0}", result.MissingFileCount),
+            Localization.F("Fehler: {0}", result.ErrorCount)
         };
 
         if (result.Details.Count > 0)
         {
             lines.Add("");
-            lines.Add("Details:");
+            lines.Add(Localization.T("Details:"));
             lines.AddRange(result.Details.Take(10));
 
             if (result.Details.Count > 10)
-                lines.Add($"… und {result.Details.Count - 10} weitere.");
+                lines.Add(Localization.F("… und {0} weitere.", result.Details.Count - 10));
         }
 
         MessageBox.Show(
             string.Join(Environment.NewLine, lines),
-            "Wiederherstellung – Ergebnis",
+            Localization.T("Wiederherstellung – Ergebnis"),
             MessageBoxButtons.OK,
             result.ErrorCount > 0 || result.MissingFileCount > 0
                 ? MessageBoxIcon.Warning
@@ -2048,7 +2081,7 @@ public sealed class MainForm : Form
 
     private TabPage MakePage(string text) => new()
     {
-        Text = text,
+        Text = Localization.T(text),
         BackColor = Bg,
         ForeColor = TextColor,
         AutoScroll = false
@@ -2056,7 +2089,7 @@ public sealed class MainForm : Form
 
     private GroupBox MakeGroup(string text) => new()
     {
-        Text = text,
+        Text = Localization.T(text),
         ForeColor = TextColor,
         BackColor = Bg,
         Padding = new Padding(10)
@@ -2064,7 +2097,7 @@ public sealed class MainForm : Form
 
     private Label MakeLabel(string text, float size, FontStyle style) => new()
     {
-        Text = text,
+        Text = Localization.T(text),
         AutoSize = true,
         Font = new Font("Segoe UI", size, style),
         ForeColor = TextColor
@@ -2073,7 +2106,7 @@ public sealed class MainForm : Form
     private Button MakeButton(string text, int minWidth = 0, bool danger = false)
     {
         var button = new Button();
-        ConfigureButton(button, text, minWidth, danger);
+        ConfigureButton(button, Localization.T(text), minWidth, danger);
         return button;
     }
 
@@ -2123,7 +2156,7 @@ internal sealed class ProfileNameForm : Form
 
     public ProfileNameForm(string title, string initialValue = "")
     {
-        Text = title;
+        Text = Localization.T(title);
         StartPosition = FormStartPosition.CenterParent;
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
@@ -2152,7 +2185,7 @@ internal sealed class ProfileNameForm : Form
 
         var label = new Label
         {
-            Text = "Profilname:",
+            Text = Localization.T("Profilname:"),
             AutoSize = true,
             Margin = new Padding(0, 0, 0, 5)
         };
@@ -2176,7 +2209,7 @@ internal sealed class ProfileNameForm : Form
 
         var cancel = new Button
         {
-            Text = "Abbrechen",
+            Text = Localization.T("Abbrechen"),
             AutoSize = true,
             MinimumSize = new Size(100, 34),
             DialogResult = DialogResult.Cancel
@@ -2184,7 +2217,7 @@ internal sealed class ProfileNameForm : Form
 
         var ok = new Button
         {
-            Text = "Speichern",
+            Text = Localization.T("Speichern"),
             AutoSize = true,
             MinimumSize = new Size(100, 34),
             DialogResult = DialogResult.OK
@@ -2195,8 +2228,8 @@ internal sealed class ProfileNameForm : Form
             if (string.IsNullOrWhiteSpace(_box.Text))
             {
                 MessageBox.Show(
-                    "Bitte einen Profilnamen eingeben.",
-                    "Profilname",
+                    Localization.T("Bitte einen Profilnamen eingeben."),
+                    Localization.T("Profilname"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
 

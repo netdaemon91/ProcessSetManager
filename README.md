@@ -1,16 +1,16 @@
 # ProcessSet Manager
 
-[![Version](https://img.shields.io/badge/Version-0.5.0-2ea44f)](#)
+[![Version](https://img.shields.io/badge/Version-0.6.0-2ea44f)](#)
 [![.NET](https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/download/dotnet/10.0)
 [![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D4?logo=windows11&logoColor=white)](#)
 [![C%23](https://img.shields.io/badge/C%23-WinForms-239120?logo=csharp&logoColor=white)](#)
-[![Sprache](https://img.shields.io/badge/UI-Deutsch-F7DF1E)](#)
+[![Sprache](https://img.shields.io/badge/UI-Deutsch%20%7C%20English-F7DF1E)](#)
 [![Lizenz](https://img.shields.io/badge/Lizenz-MIT-blue)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-in%20Entwicklung-orange)](#)
 
 ProcessSet Manager ist ein schlanker Open-Source-Session- und Prozessprofil-Manager für Windows. Die Anwendung ermöglicht es, laufende Programme zu einem Profil zusammenzufassen, sie kontrolliert zu beenden und den vorherigen Zustand später soweit möglich wiederherzustellen.
 
-> Aktueller Stand: **0.5.0**  
+> Aktueller Stand: **0.6.0**  
 > Plattform: **Windows x64**  
 > Framework: **.NET 10 / WinForms**  
 > Lizenz: **MIT**
@@ -99,7 +99,13 @@ Damit bleibt die ursprüngliche Idee des Projekts auch unabhängig von der GUI n
 
 ## Integrierte Hilfe
 
-Version 0.5 enthält einen eigenen `Hilfe`-Tab. Dort werden Profil-Erstellung, Modus-Aktivierung, Wiederherstellung, Schutzliste, Tray-Modus und Export direkt in der Anwendung erklärt.
+Version 0.6 enthält einen eigenen `Hilfe`-Tab. Dort werden Profil-Erstellung, Modus-Aktivierung, Wiederherstellung, Schutzliste, Tray-Modus und Export direkt in der Anwendung erklärt.
+
+## Mehrsprachigkeit
+
+Die Oberfläche unterstützt **Deutsch und Englisch**. Bei einer neuen Installation wird anhand der Windows-Sprache automatisch Deutsch oder Englisch gewählt. Unter `Einstellungen → Sprache / Language` kann die Sprache jederzeit geändert werden; die Änderung wird nach einem Neustart der Anwendung aktiv.
+
+Profile, Schutzlisten und Wiederherstellungssitzungen bleiben dabei sprachunabhängig und können in beiden Oberflächensprachen weiterverwendet werden.
 
 ## Daten und Speicherorte
 
