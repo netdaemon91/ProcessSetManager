@@ -184,6 +184,3 @@ Der Fokus des Projekts soll bewusst eng bleiben: Prozessprofile, Modi, transpare
 ## Lizenz
 
 ProcessSet Manager steht unter der [MIT License](LICENSE).
-
-**Vibe Coded by NetDaemon**  
-https://ntdmn.xyz/
