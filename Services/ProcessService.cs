@@ -173,7 +173,7 @@ public sealed class ProcessService
             if (IsProtected(name, userProtected))
             {
                 result.ProtectedCount++;
-                progress?.Report($"{name}: geschützt, übersprungen");
+                progress?.Report(Localization.F("{0}: geschützt, übersprungen", name));
                 continue;
             }
 
@@ -182,7 +182,7 @@ public sealed class ProcessService
             if (matches.Length == 0)
             {
                 result.NotRunningCount++;
-                progress?.Report($"{name}: läuft nicht");
+                progress?.Report(Localization.F("{0}: läuft nicht", name));
                 continue;
             }
 
@@ -198,7 +198,7 @@ public sealed class ProcessService
 
                     try
                     {
-                        progress?.Report($"Beende {name} (PID {process.Id}) …");
+                        progress?.Report(Localization.F("Beende {0} (PID {1}) …", name, process.Id));
 
                         var hasWindow = false;
                         try { hasWindow = process.MainWindowHandle != IntPtr.Zero; } catch { }
@@ -234,8 +234,8 @@ public sealed class ProcessService
                     catch (Exception ex)
                     {
                         nameHadError = true;
-                        result.Errors.Add($"{name} (PID {process.Id}): {ex.Message}");
-                        progress?.Report($"{name}: Fehler – {ex.Message}");
+                        result.Errors.Add(Localization.F("{0} (PID {1}): Fehler – {2}", name, process.Id, ex.Message));
+                        progress?.Report(Localization.F("{0}: Fehler – {1}", name, ex.Message));
                     }
                 }
             }
@@ -253,7 +253,7 @@ public sealed class ProcessService
                 {
                     result.ErrorCount++;
                     if (!nameHadError)
-                        result.Errors.Add($"{name}: Prozess läuft weiterhin.");
+                        result.Errors.Add(Localization.F("{0}: Prozess läuft weiterhin.", name));
                 }
             }
             finally
@@ -284,14 +284,14 @@ public sealed class ProcessService
                 if (alreadyRunning)
                 {
                     result.AlreadyRunningCount++;
-                    result.Details.Add($"{target.Name}: läuft bereits");
+                    result.Details.Add(Localization.F("{0}: läuft bereits", target.Name));
                     continue;
                 }
 
                 if (!File.Exists(target.Path))
                 {
                     result.MissingFileCount++;
-                    result.Details.Add($"{target.Name}: Datei nicht gefunden");
+                    result.Details.Add(Localization.F("{0}: Datei nicht gefunden", target.Name));
                     continue;
                 }
 
@@ -303,13 +303,13 @@ public sealed class ProcessService
                 });
 
                 result.StartedCount++;
-                result.Details.Add($"{target.Name}: gestartet");
-                progress?.Report($"{target.Name}: gestartet");
+                result.Details.Add(Localization.F("{0}: gestartet", target.Name));
+                progress?.Report(Localization.F("{0}: gestartet", target.Name));
             }
             catch (Exception ex)
             {
                 result.ErrorCount++;
-                result.Details.Add($"{target.Name}: Fehler – {ex.Message}");
+                result.Details.Add(Localization.F("{0}: Fehler – {1}", target.Name, ex.Message));
             }
         }
 

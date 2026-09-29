@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using ProcessSetManager.Services;
 
 namespace ProcessSetManager;
 
@@ -10,6 +11,16 @@ internal static class Program
         Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
+
+        try
+        {
+            var startupStore = new ProfileStore();
+            Localization.SetLanguage(startupStore.LoadSettings().Language);
+        }
+        catch
+        {
+            // Falls die Einstellungen nicht lesbar sind, bleibt die automatisch erkannte Sprache aktiv.
+        }
 
         Application.ThreadException += (_, args) =>
             ReportCrash("WinForms UI exception", args.Exception);
@@ -67,15 +78,15 @@ internal static class Program
         try
         {
             var message =
-                "ProcessSet Manager konnte nicht gestartet bzw. weiter ausgeführt werden.\n\n" +
+                Localization.T("ProcessSet Manager konnte nicht gestartet bzw. weiter ausgeführt werden.\n\n") +
                 $"{exception.GetType().Name}: {exception.Message}";
 
             if (!string.IsNullOrWhiteSpace(logPath))
-                message += $"\n\nFehlerdetails wurden gespeichert unter:\n{logPath}";
+                message += Localization.F("\n\nFehlerdetails wurden gespeichert unter:\n{0}", logPath);
 
             MessageBox.Show(
                 message,
-                "ProcessSet Manager – Fehler",
+                Localization.T("ProcessSet Manager – Fehler"),
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error);
         }

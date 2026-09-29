@@ -12,7 +12,7 @@ public sealed class ModePreviewForm : Form
 
     public ModePreviewForm(string modeName, ModePreview preview)
     {
-        Text = $"Vorschau – {modeName}";
+        Text = Localization.F("Vorschau – {0}", modeName);
         StartPosition = FormStartPosition.CenterParent;
         MinimumSize = new Size(760, 480);
         Size = new Size(900, 590);
@@ -47,7 +47,7 @@ public sealed class ModePreviewForm : Form
 
         var intro = new Label
         {
-            Text = $"Folgendes würde beim Aktivieren von „{modeName}“ passieren:",
+            Text = Localization.F("Folgendes würde beim Aktivieren von „{0}“ passieren:", modeName),
             AutoSize = true,
             Font = new Font("Segoe UI Semibold", 12),
             ForeColor = TextColor,
@@ -78,10 +78,10 @@ public sealed class ModePreviewForm : Form
         grid.DefaultCellStyle.SelectionForeColor = TextColor;
         grid.GridColor = Color.FromArgb(59, 64, 74);
 
-        grid.Columns.Add("Name", "Prozess");
-        grid.Columns.Add("State", "Aktueller Zustand");
-        grid.Columns.Add("Restore", "Wiederherstellung");
-        grid.Columns.Add("Instances", "Instanzen");
+        grid.Columns.Add("Name", Localization.T("Prozess"));
+        grid.Columns.Add("State", Localization.T("Aktueller Zustand"));
+        grid.Columns.Add("Restore", Localization.T("Wiederherstellung"));
+        grid.Columns.Add("Instances", Localization.T("Instanzen"));
 
         foreach (var item in preview.Items)
         {
@@ -90,20 +90,20 @@ public sealed class ModePreviewForm : Form
 
             if (item.IsProtected)
             {
-                state = "Geschützt – wird übersprungen";
-                restore = "Nicht nötig";
+                state = Localization.T("Geschützt – wird übersprungen");
+                restore = Localization.T("Nicht nötig");
             }
             else if (!item.IsRunning)
             {
-                state = "Läuft nicht";
+                state = Localization.T("Läuft nicht");
                 restore = "Nicht nötig";
             }
             else
             {
-                state = "Wird beendet";
+                state = Localization.T("Wird beendet");
                 restore = item.IsRestorable
-                    ? "Ja"
-                    : "Nein – kein lesbarer EXE-Pfad";
+                    ? Localization.T("Ja")
+                    : Localization.T("Nein – kein lesbarer EXE-Pfad");
             }
 
             grid.Rows.Add(
@@ -119,12 +119,13 @@ public sealed class ModePreviewForm : Form
             ForeColor = Muted,
             MaximumSize = new Size(820, 0),
             Margin = new Padding(0, 12, 0, 8),
-            Text =
-                $"{preview.RunningCount} laufende Programme würden beendet · " +
-                $"{preview.RestorableCount} davon automatisch wiederherstellbar · " +
-                $"{preview.NonRestorableRunningCount} nicht automatisch wiederherstellbar · " +
-                $"{preview.ProtectedCount} geschützt · " +
-                $"{preview.NotRunningCount} laufen derzeit nicht"
+            Text = Localization.F(
+                "{0} laufende Programme würden beendet · {1} davon automatisch wiederherstellbar · {2} nicht automatisch wiederherstellbar · {3} geschützt · {4} laufen derzeit nicht",
+                preview.RunningCount,
+                preview.RestorableCount,
+                preview.NonRestorableRunningCount,
+                preview.ProtectedCount,
+                preview.NotRunningCount)
         };
 
         var warning = new Label
@@ -134,8 +135,8 @@ public sealed class ModePreviewForm : Form
             MaximumSize = new Size(820, 0),
             Margin = new Padding(0, 0, 0, 10),
             Text = preview.NonRestorableRunningCount > 0
-                ? "Hinweis: Programme ohne lesbaren EXE-Pfad können beendet, aber von ProcessSet danach nicht automatisch neu gestartet werden."
-                : "Die Wiederherstellung startet Programme neu. Offene Dokumente, Tabs oder interne Sitzungen kann nur die jeweilige Anwendung selbst wiederherstellen."
+                ? Localization.T("Hinweis: Programme ohne lesbaren EXE-Pfad können beendet, aber von ProcessSet danach nicht automatisch neu gestartet werden.")
+                : Localization.T("Die Wiederherstellung startet Programme neu. Offene Dokumente, Tabs oder interne Sitzungen kann nur die jeweilige Anwendung selbst wiederherstellen.")
         };
 
         var buttons = new FlowLayoutPanel
@@ -149,7 +150,7 @@ public sealed class ModePreviewForm : Form
 
         var cancel = new Button
         {
-            Text = "Abbrechen",
+            Text = Localization.T("Abbrechen"),
             AutoSize = true,
             MinimumSize = new Size(110, 36),
             DialogResult = DialogResult.Cancel
@@ -157,7 +158,7 @@ public sealed class ModePreviewForm : Form
 
         var activate = new Button
         {
-            Text = "Modus aktivieren",
+            Text = Localization.T("Modus aktivieren"),
             AutoSize = true,
             MinimumSize = new Size(150, 36),
             DialogResult = DialogResult.OK

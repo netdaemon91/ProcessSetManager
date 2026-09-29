@@ -40,7 +40,7 @@ public sealed class ProfileStore
     public void SaveProfile(ProcessProfile profile)
     {
         if (string.IsNullOrWhiteSpace(profile.Name))
-            throw new InvalidOperationException("Das Profil benötigt einen Namen.");
+            throw new InvalidOperationException(Localization.T("Das Profil benötigt einen Namen."));
 
         Directory.CreateDirectory(ProfileDirectory);
         File.WriteAllText(GetProfilePath(profile.Name), JsonSerializer.Serialize(profile, _jsonOptions));
@@ -50,10 +50,10 @@ public sealed class ProfileStore
     {
         var path = GetProfilePath(name);
         if (!File.Exists(path))
-            throw new FileNotFoundException("Das Profil wurde nicht gefunden.", path);
+            throw new FileNotFoundException(Localization.T("Das Profil wurde nicht gefunden."), path);
 
         return JsonSerializer.Deserialize<ProcessProfile>(File.ReadAllText(path), _jsonOptions)
-               ?? throw new InvalidDataException("Das Profil konnte nicht gelesen werden.");
+               ?? throw new InvalidDataException(Localization.T("Das Profil konnte nicht gelesen werden."));
     }
 
     public void DeleteProfile(string name)
@@ -66,7 +66,7 @@ public sealed class ProfileStore
     public void RenameProfile(string oldName, string newName)
     {
         if (string.IsNullOrWhiteSpace(newName))
-            throw new InvalidOperationException("Der neue Profilname darf nicht leer sein.");
+            throw new InvalidOperationException(Localization.T("Der neue Profilname darf nicht leer sein."));
 
         var oldPath = GetProfilePath(oldName);
         var newPath = GetProfilePath(newName);
@@ -75,7 +75,7 @@ public sealed class ProfileStore
             throw new FileNotFoundException("Das Profil wurde nicht gefunden.", oldPath);
 
         if (!oldPath.Equals(newPath, StringComparison.OrdinalIgnoreCase) && File.Exists(newPath))
-            throw new IOException("Ein Profil mit diesem Namen existiert bereits.");
+            throw new IOException(Localization.T("Ein Profil mit diesem Namen existiert bereits."));
 
         var profile = LoadProfile(oldName);
         profile.Name = newName.Trim();
@@ -89,11 +89,11 @@ public sealed class ProfileStore
     public void DuplicateProfile(string sourceName, string newName)
     {
         if (string.IsNullOrWhiteSpace(newName))
-            throw new InvalidOperationException("Der neue Profilname darf nicht leer sein.");
+            throw new InvalidOperationException(Localization.T("Der neue Profilname darf nicht leer sein."));
 
         var newPath = GetProfilePath(newName);
         if (File.Exists(newPath))
-            throw new IOException("Ein Profil mit diesem Namen existiert bereits.");
+            throw new IOException(Localization.T("Ein Profil mit diesem Namen existiert bereits."));
 
         var source = LoadProfile(sourceName);
         var copy = new ProcessProfile
@@ -136,6 +136,7 @@ public sealed class ProfileStore
                                File.ReadAllText(SettingsPath), _jsonOptions)
                            ?? new AppSettings();
 
+            settings.Language = Localization.NormalizeLanguage(settings.Language);
             settings.ProtectedProcesses ??= new List<string>();
             settings.ProtectedProcesses = settings.ProtectedProcesses
                 .Where(n => !string.IsNullOrWhiteSpace(n))
@@ -155,6 +156,7 @@ public sealed class ProfileStore
     public void SaveSettings(AppSettings settings)
     {
         Directory.CreateDirectory(BaseDirectory);
+        settings.Language = Localization.NormalizeLanguage(settings.Language);
         settings.ProtectedProcesses = settings.ProtectedProcesses
             .Where(n => !string.IsNullOrWhiteSpace(n))
             .Select(NormalizeProcessName)
@@ -209,7 +211,7 @@ public sealed class ProfileStore
         var safe = new string(name.Trim().Select(c => invalid.Contains(c) ? '_' : c).ToArray());
 
         if (string.IsNullOrWhiteSpace(safe))
-            throw new InvalidOperationException("Ungültiger Profilname.");
+            throw new InvalidOperationException(Localization.T("Ungültiger Profilname."));
 
         return Path.Combine(ProfileDirectory, safe + ".json");
     }

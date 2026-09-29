@@ -30,8 +30,13 @@ public sealed class RestartTarget
 
 public sealed class AppSettings
 {
-    public int FormatVersion { get; set; } = 1;
+    public int FormatVersion { get; set; } = 2;
     public bool MinimizeToTray { get; set; } = true;
+    public string Language { get; set; } =
+        System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName
+            .Equals("de", StringComparison.OrdinalIgnoreCase)
+            ? "de"
+            : "en";
     public List<string> ProtectedProcesses { get; set; } = new();
 }
 

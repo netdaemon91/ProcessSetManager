@@ -10,7 +10,7 @@ public sealed class AboutForm : Form
 
     public AboutForm()
     {
-        Text = "About - ProcessSet Manager";
+        Text = Localization.T("About - ProcessSet Manager");
         StartPosition = FormStartPosition.CenterParent;
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
@@ -62,7 +62,7 @@ public sealed class AboutForm : Form
 
         var credit = new Label
         {
-            Text = $"Vibe Coded by NetDaemon  ·  Version {Application.ProductVersion}",
+            Text = Localization.F("Vibe Coded by NetDaemon  ·  Version {0}", Application.ProductVersion),
             AutoSize = true,
             ForeColor = TextColor,
             Margin = new Padding(0, 0, 0, 6)
