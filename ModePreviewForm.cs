@@ -96,7 +96,7 @@ public sealed class ModePreviewForm : Form
             else if (!item.IsRunning)
             {
                 state = Localization.T("Läuft nicht");
-                restore = "Nicht nötig";
+                restore = Localization.T("Nicht nötig");
             }
             else
             {

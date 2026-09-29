@@ -72,7 +72,7 @@ public sealed class ProfileStore
         var newPath = GetProfilePath(newName);
 
         if (!File.Exists(oldPath))
-            throw new FileNotFoundException("Das Profil wurde nicht gefunden.", oldPath);
+            throw new FileNotFoundException(Localization.T("Das Profil wurde nicht gefunden."), oldPath);
 
         if (!oldPath.Equals(newPath, StringComparison.OrdinalIgnoreCase) && File.Exists(newPath))
             throw new IOException(Localization.T("Ein Profil mit diesem Namen existiert bereits."));

@@ -288,7 +288,7 @@ public sealed class MainForm : Form
         execute.Click += async (_, _) => await ExecuteSelectedProfileAsync();
         _toolTip.SetToolTip(execute, Localization.T("Prüft den aktuellen Zustand und zeigt vor dem Beenden eine Vorschau."));
 
-        ConfigureButton(_modeActionButton, "Modus beenden & wiederherstellen", 285, danger: false);
+        ConfigureButton(_modeActionButton, Localization.T("Modus beenden & wiederherstellen"), 285, danger: false);
         _modeActionButton.Click += (_, _) => RestoreLastSession(fromActiveMode: true);
         _toolTip.SetToolTip(_modeActionButton, Localization.T("Startet die beim Aktivieren gespeicherten Programme wieder und beendet den aktiven Modus."));
 
