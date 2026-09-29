@@ -1,165 +1,172 @@
 # ProcessSet Manager
 
+**English** | [Deutsch](README.de.md)
+
 [![Version](https://img.shields.io/badge/Version-0.6.0-2ea44f)](#)
 [![.NET](https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/download/dotnet/10.0)
 [![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D4?logo=windows11&logoColor=white)](#)
 [![C%23](https://img.shields.io/badge/C%23-WinForms-239120?logo=csharp&logoColor=white)](#)
-[![Sprache](https://img.shields.io/badge/UI-Deutsch%20%7C%20English-F7DF1E)](#)
-[![Lizenz](https://img.shields.io/badge/Lizenz-MIT-blue)](LICENSE)
-[![Status](https://img.shields.io/badge/Status-in%20Entwicklung-orange)](#)
+[![UI Languages](https://img.shields.io/badge/UI-Deutsch%20%7C%20English-F7DF1E)](#)
+[![License](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
+[![Status](https://img.shields.io/badge/Status-In%20Development-orange)](#)
+[![GitHub stars](https://img.shields.io/github/stars/netdaemon91/ProcessSetManager?style=flat)](https://github.com/netdaemon91/ProcessSetManager/stargazers)
+[![Last commit](https://img.shields.io/github/last-commit/netdaemon91/ProcessSetManager)](https://github.com/netdaemon91/ProcessSetManager/commits/main)
 
-ProcessSet Manager ist ein schlanker Open-Source-Session- und Prozessprofil-Manager für Windows. Die Anwendung ermöglicht es, laufende Programme zu einem Profil zusammenzufassen, sie kontrolliert zu beenden und den vorherigen Zustand später soweit möglich wiederherzustellen.
+ProcessSet Manager is a lightweight open-source session and process profile manager for Windows. It lets you group running applications into reusable profiles, close them in a controlled order, and later restore the previous application state as far as possible.
 
-> Aktueller Stand: **0.6.0**  
-> Plattform: **Windows x64**  
+> Current version: **0.6.0**  
+> Platform: **Windows x64**  
 > Framework: **.NET 10 / WinForms**  
-> Lizenz: **MIT**
+> License: **MIT**
 
-## Idee
+## Concept
 
-Statt bei jedem Wechsel zwischen Arbeit, Gaming oder Streaming dieselben Programme einzeln zu schließen, können diese in ProcessSet Manager als Profil gespeichert werden.
+Instead of manually closing the same applications every time you switch between work, gaming, or streaming, ProcessSet Manager lets you save those applications as a profile.
 
-Beispiel `Gaming`:
+Example: `Gaming`
 
-1. Photoshop, Thunderbird und OneDrive laufen.
-2. Das Profil `Gaming` wird aktiviert.
-3. ProcessSet zeigt vorab, welche Prozesse beendet und später wiederhergestellt werden können.
-4. Die ausgewählten Programme werden nacheinander geschlossen.
-5. Nach dem Spielen beendet man den Modus.
-6. ProcessSet startet die zuvor gespeicherten Programme erneut.
+1. Photoshop, Thunderbird, and OneDrive are running.
+2. The `Gaming` profile is activated.
+3. ProcessSet shows which processes would be closed and which can be restored later.
+4. The selected applications are closed one after another.
+5. After gaming, you end the mode.
+6. ProcessSet restarts the applications it was able to save for restoration.
 
-ProcessSet Manager ist **kein PC-Booster** und nimmt keine aggressiven Registry-, RAM-, Dienst- oder Scheduler-Tweaks vor. Der Schwerpunkt liegt auf nachvollziehbaren Prozessprofilen und reproduzierbaren Session-Wechseln.
+ProcessSet Manager is **not a PC booster**. It deliberately avoids aggressive registry tweaks, RAM cleaners, service manipulation, and scheduler tweaks. The focus is on predictable process profiles and reproducible session changes.
 
-## Funktionen
+## Features
 
-- laufende Windows-Prozesse anzeigen
-- Suche nach Prozessname, Fenstertitel, Pfad und Typ
-- nur klassische Fenster-Apps oder auch Hintergrundprozesse anzeigen
-- Programme per Checkbox auswählen
-- Beendigungsreihenfolge frei festlegen
-- Auswahl direkt als Modus aktivieren
-- Profile speichern, laden, umbenennen, duplizieren und löschen
-- Profile direkt über das System-Tray aktivieren
-- aktiven Modus persistent speichern
-- zuletzt beendete Programme soweit möglich wiederherstellen
-- persönliche Schutzliste für Prozesse
-- fest eingebaute Schutzregeln für kritische Windows-Prozesse
-- Vorschau vor jeder Modus-Aktivierung
-- Anzeige, ob ein Prozess automatisch wiederherstellbar ist (`↻`)
-- Ergebnisübersicht nach Aktivierung und Wiederherstellung
-- TXT-, PowerShell- und Batch-Export
-- integrierte Hilfe und Tooltips
-- Dark UI
-- Per-Monitor-V2-DPI-Unterstützung
-- Crash-Log bei unerwarteten Fehlern
+- list currently running Windows processes
+- search by process name, window title, path, and type
+- optionally show only regular applications with windows
+- select processes via checkboxes
+- define the shutdown order
+- activate the current selection directly as a mode
+- save, load, rename, duplicate, and delete profiles
+- activate profiles from the system tray
+- persist the currently active mode
+- restore previously closed applications when possible
+- maintain a personal protection list
+- built-in protection for critical Windows processes
+- preview every mode activation before anything is closed
+- show whether a process is automatically restorable (`↻`)
+- result summaries after activation and restore
+- export profiles as TXT, PowerShell, or Batch files
+- integrated help and tooltips
+- German and English interface
+- dark UI
+- Per-Monitor-V2 DPI support
+- crash log for unexpected errors
 
-## Wiederherstellung
+## Restore behavior
 
-Vor dem Aktivieren eines Modus prüft ProcessSet, welche betroffenen Programme tatsächlich laufen und ob ein lesbarer EXE-Pfad verfügbar ist.
+Before activating a mode, ProcessSet checks which profile processes are currently running and whether a readable EXE path is available.
 
-Ein Prozess mit `↻ Ja` kann grundsätzlich später automatisch neu gestartet werden. `↻ Nein` bedeutet nicht, dass das Beenden fehlschlägt – lediglich die automatische Wiederherstellung ist nicht garantiert.
+A process marked `↻ Yes` can generally be restarted automatically later. `↻ No` does **not** mean that closing the process will fail; it only means automatic restoration cannot be guaranteed.
 
-### Wichtige Grenze
+### Important limitation
 
-ProcessSet startet Programme neu, rekonstruiert aber **nicht selbst deren internen Zustand**. Dazu gehören beispielsweise:
+ProcessSet restarts applications, but it does **not** reconstruct their internal state itself. Examples include:
 
-- offene Browser-Tabs
-- nicht gespeicherte Dokumente
-- geöffnete Photoshop-Projekte
-- Fensterpositionen
-- nicht gespeicherte Eingaben
+- open browser tabs
+- unsaved documents
+- open Photoshop projects
+- window positions
+- unsaved input
 
-Wenn die jeweilige Anwendung eine eigene Sitzungswiederherstellung besitzt, kann diese beim Neustart natürlich greifen.
+If an application provides its own session recovery, that recovery may of course take effect when ProcessSet starts the application again.
 
-## Schutzliste
+## Protection list
 
-Unter `Einstellungen` können zusätzliche Prozessnamen geschützt werden. Geschützte Prozesse werden von ProcessSet nicht beendet – auch dann nicht, wenn sie bereits in einem älteren Profil enthalten sind.
+Additional process names can be protected under `Settings`. Protected processes are never terminated by ProcessSet, even when they are included in an older profile.
 
-Kritische Windows-Prozesse sind zusätzlich fest im Programm geschützt.
+Critical Windows processes are also protected by built-in rules.
 
-## System-Tray
+## System tray
 
-Standardmäßig kann ProcessSet beim Minimieren in den Windows-Infobereich wechseln. Über das Tray-Menü können unter anderem:
+By default, ProcessSet can move to the Windows notification area when minimized. From the tray menu you can:
 
-- gespeicherte Profile aktiviert werden
-- der aktuelle Modus angezeigt werden
-- der aktive Modus beendet und wiederhergestellt werden
-- das Hauptfenster geöffnet werden
-- die Anwendung beendet werden
+- activate saved profiles
+- see the currently active mode
+- end the active mode and restore its session
+- reopen the main window
+- exit ProcessSet Manager
 
 ## Export
 
-Profile können zusätzlich exportiert werden als:
+Profiles can also be exported as:
 
-- `.txt` – reine Prozessnamen
-- `.ps1` – PowerShell-Skript zum sequenziellen Beenden
-- `.bat` – Batch-Skript zum Beenden der Prozesse
+- `.txt` — plain process names
+- `.ps1` — PowerShell script for sequential process termination
+- `.bat` — Batch script for terminating the processes
 
-Damit bleibt die ursprüngliche Idee des Projekts auch unabhängig von der GUI nutzbar.
+This keeps the original process-list concept usable even outside the GUI.
 
-## Integrierte Hilfe
+## Integrated help
 
-Version 0.6 enthält einen eigenen `Hilfe`-Tab. Dort werden Profil-Erstellung, Modus-Aktivierung, Wiederherstellung, Schutzliste, Tray-Modus und Export direkt in der Anwendung erklärt.
+Version 0.6 includes a dedicated `Help` tab that explains profile creation, mode activation, restoration, the protection list, tray mode, exports, and language selection directly inside the application.
 
-## Mehrsprachigkeit
+## Languages
 
-Die Oberfläche unterstützt **Deutsch und Englisch**. Bei einer neuen Installation wird anhand der Windows-Sprache automatisch Deutsch oder Englisch gewählt. Unter `Einstellungen → Sprache / Language` kann die Sprache jederzeit geändert werden; die Änderung wird nach einem Neustart der Anwendung aktiv.
+The interface supports **German and English**. On a fresh installation, ProcessSet automatically selects German or English based on the Windows UI language.
 
-Profile, Schutzlisten und Wiederherstellungssitzungen bleiben dabei sprachunabhängig und können in beiden Oberflächensprachen weiterverwendet werden.
+You can change the language at any time under `Settings → Language / Sprache`. The new language takes effect after restarting the application.
 
-## Daten und Speicherorte
+Profiles, protection lists, and restore sessions remain language-independent and can be reused in either UI language.
 
-ProcessSet speichert Benutzerdaten im normalen Windows-Anwendungsdatenverzeichnis:
+## Data locations
 
-| Inhalt | Speicherort |
+ProcessSet stores user data in the standard Windows application data directories:
+
+| Data | Location |
 |---|---|
-| Profile | `%APPDATA%\ProcessSetManager\Profiles` |
-| letzte Wiederherstellungssitzung | `%APPDATA%\ProcessSetManager\last-session.json` |
-| aktiver Modus | `%APPDATA%\ProcessSetManager\mode-state.json` |
-| Einstellungen / Schutzliste | `%APPDATA%\ProcessSetManager\settings.json` |
-| Crash-Log | `%LOCALAPPDATA%\ProcessSetManager\crash.log` |
+| Profiles | `%APPDATA%\ProcessSetManager\Profiles` |
+| Last restore session | `%APPDATA%\ProcessSetManager\last-session.json` |
+| Active mode | `%APPDATA%\ProcessSetManager\mode-state.json` |
+| Settings / protection list | `%APPDATA%\ProcessSetManager\settings.json` |
+| Crash log | `%LOCALAPPDATA%\ProcessSetManager\crash.log` |
 
-Es wird keine externe Datenbank benötigt.
+No external database is required.
 
-## Voraussetzungen zum Bauen
+## Build requirements
 
 - Windows 10/11 x64
 - [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 
 ## Build
 
-Repository klonen:
+Clone the repository:
 
 ```powershell
 git clone https://github.com/netdaemon91/ProcessSetManager.git
 cd ProcessSetManager
 ```
 
-Normaler Release-Build:
+Regular release build:
 
 ```text
 build.bat
 ```
 
-Oder direkt eine einzelne selbständige EXE erstellen:
+Or publish a single self-contained executable:
 
 ```text
 publish-single-exe.bat
 ```
 
-Die veröffentlichte EXE liegt anschließend unter:
+The resulting executable is written to:
 
 ```text
 bin\Release\net10.0-windows\win-x64\publish\ProcessSetManager.exe
 ```
 
-Die Veröffentlichung ist `self-contained`; auf dem Zielsystem muss .NET daher nicht separat installiert sein.
+The published build is `self-contained`, so the target machine does not need a separate .NET installation.
 
-## Administratorrechte
+## Administrator rights
 
-Normale Benutzerprozesse können in der Regel ohne erhöhte Rechte verwaltet werden. Soll ein Programm beendet werden, das selbst als Administrator läuft, muss ProcessSet Manager gegebenenfalls ebenfalls erhöht gestartet werden.
+Normal user processes can usually be managed without elevation. If you want ProcessSet to terminate an application that itself runs as administrator, ProcessSet Manager may also need to be started with administrator rights.
 
-## Projektstruktur
+## Project structure
 
 ```text
 ProcessSetManager/
@@ -175,18 +182,19 @@ ProcessSetManager/
 ├─ AboutForm.cs
 ├─ MainForm.cs
 ├─ ModePreviewForm.cs
+├─ Localization.cs
 ├─ Program.cs
 ├─ ProcessSetManager.csproj
 ├─ build.bat
 └─ publish-single-exe.bat
 ```
 
-## Mitwirken
+## Contributing
 
-Issues und Pull Requests sind willkommen. Details stehen in [CONTRIBUTING.md](CONTRIBUTING.md).
+Issues and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
-Der Fokus des Projekts soll bewusst eng bleiben: Prozessprofile, Modi, transparente Vorschau und Wiederherstellung. Unbelegte „Performance-Booster“-Funktionen, aggressive Registry-Tweaks, RAM-Cleaner oder automatisches Abschalten wichtiger Windows-Dienste gehören nicht zum Projektziel.
+The project intentionally keeps a narrow scope: process profiles, modes, transparent previews, and restoration. Unsubstantiated “performance booster” features, aggressive registry tweaks, RAM cleaners, or automatic disabling of important Windows services are outside the project goals.
 
-## Lizenz
+## License
 
-ProcessSet Manager steht unter der [MIT License](LICENSE).
+ProcessSet Manager is released under the [MIT License](LICENSE).
